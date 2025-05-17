@@ -1,0 +1,128 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String    @id @default(uuid())
+  name        String
+  email       String    @unique
+  password    String?   // Can be null for Google/Facebook login
+  profilePic  String?   // Profile picture URL
+  role        String    
+  googleId    String?   @unique // For Google login
+  facebookId  String?   @unique // For Facebook login
+  orders      Order[]
+  addresses    Address[]
+  notifications Notification[]
+  createdAt   DateTime  @default(now())
+
+
+  passwordResets PasswordReset[]
+}
+
+model Address {
+  id          String   @id @default(uuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  type        AddressType  // ENTREGA ou COBRANCA
+  street      String
+  number      String
+  complement  String?
+  neighborhood String
+  city        String
+  state       String
+  zipCode     String
+  country     String
+  createdAt   DateTime @default(now())
+}
+
+enum AddressType {
+  DELIVERY
+  BILLING
+}
+
+model PasswordReset {
+  id          String   @id @default(uuid())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      String
+  token       String   @unique
+  expiresAt   DateTime
+  used        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+}
+
+model Product {
+  id          String    @id @default(uuid())
+  name        String
+  description String
+  price       Decimal
+  stock       Int
+  category    Category  @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  orderItems  OrderItem[]
+  createdAt   DateTime  @default(now())
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  products    Product[]
+}
+
+model Order {
+  id          String       @id @default(uuid())
+  user        User         @relation(fields: [userId], references: [id])
+  userId      String
+  status      String       @default("pending") // "pending", "paid", "shipped", "canceled"
+  items       OrderItem[]
+  payment     Payment?
+  shipment    Shipment?
+  totalAmount Decimal
+  createdAt   DateTime     @default(now())
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  order       Order    @relation(fields: [orderId], references: [id])
+  orderId     String
+  product     Product  @relation(fields: [productId], references: [id])
+  productId   String
+  quantity    Int
+  unitPrice   Decimal
+  subtotal    Decimal
+}
+
+model Payment {
+  id          String  @id @default(uuid())
+  order       Order   @relation(fields: [orderId], references: [id])
+  orderId     String  @unique
+  method      String  // "PayPal", "Stripe", "Credit Card", etc.
+  status      String  // "approved", "rejected", "pending"
+  amountPaid  Decimal
+  paidAt      DateTime @default(now())
+}
+
+model Shipment {
+  id            String  @id @default(uuid())
+  order         Order   @relation(fields: [orderId], references: [id])
+  orderId       String  @unique
+  trackingCode  String?
+  status        String  // "in transit", "delivered"
+  shippedAt     DateTime @default(now())
+}
+
+model Notification {
+  id          String  @id @default(uuid())
+  user        User    @relation(fields: [userId], references: [id])
+  userId      String
+  message     String
+  type        String  // "order updated", "payment approved", etc.
+  read        Boolean @default(false)
+  sentAt      DateTime @default(now())
+}
