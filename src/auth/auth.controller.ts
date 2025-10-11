@@ -12,7 +12,9 @@ import { AuthGuard } from '@nestjs/passport';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthDto } from './dto/auth.dto';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(
@@ -22,12 +24,16 @@ export class AuthController {
   ) {}
 
   @Get('google')
+  @ApiOperation({ summary: 'Iniciar autenticação com o Google' })
+  @ApiResponse({ status: 200, description: 'Redirecionando para o Google...' })
   @UseGuards(AuthGuard('google'))
   async googleAuth() {
     return { message: 'Redirecionando para o Google...' };
   }
 
   @Get('google/callback')
+  @ApiOperation({ summary: 'Callback do Google após autenticação' })
+  @ApiResponse({ status: 200, description: 'Usuário autenticado com sucesso.' })
   @UseGuards(AuthGuard('google'))
   async googleAuthRedirect(@Req() req, @Res() res) {
     const googleUser = req.user;
@@ -48,6 +54,8 @@ export class AuthController {
   }
 
   @Post('login')
+  @ApiOperation({ summary: 'Login com email e senha' })
+  @ApiResponse({ status: 200, description: 'Usuário autenticado com sucesso .' })
   async login(@Body() authDto: AuthDto) {
     return this.authService.login(authDto);
   }
