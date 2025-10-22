@@ -9,9 +9,7 @@ async function bootstrap() {
     .setTitle('My API')
     .setDescription('API description')
     .setVersion('1.0')
-    .addTag('tag1')
     .build();
-
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api-docs', app, document);
   await app.listen(process.env.PORT ?? 3000);

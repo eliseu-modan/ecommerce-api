@@ -13,6 +13,7 @@ import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { AuthDto } from './dto/auth.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -38,7 +39,7 @@ export class AuthController {
   async googleAuthRedirect(@Req() req, @Res() res) {
     const googleUser = req.user;
 
-    let user = await this.userService.findByEmail(googleUser.email);    
+    let user = await this.userService.findByEmail(googleUser.email);
     if (!user) {
       user = await this.userService.create({
         name: googleUser.name,
@@ -55,7 +56,10 @@ export class AuthController {
 
   @Post('login')
   @ApiOperation({ summary: 'Login com email e senha' })
-  @ApiResponse({ status: 200, description: 'Usuário autenticado com sucesso .' })
+  @ApiResponse({
+    status: 200,
+    description: 'Usuário autenticado com sucesso .',
+  })
   async login(@Body() authDto: AuthDto) {
     return this.authService.login(authDto);
   }

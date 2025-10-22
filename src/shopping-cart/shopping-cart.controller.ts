@@ -53,6 +53,7 @@ export class ShoppingCartController {
     status: 200,
     description: 'Quantidade do item atualizada com sucesso.',
   })
+
   async updateItemQuantity(
     @Body() body: { cartId: string; productId: string; quantity: number },
   ) {
