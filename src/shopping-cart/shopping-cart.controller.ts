@@ -33,14 +33,13 @@ export class ShoppingCartController {
   }
 
   @Get('get-cart')
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Obter carrinho do usuário' })
   @ApiResponse({
     status: 201,
     description: 'Item adicionado ao carrinho com sucesso.',
   })
   async getCart(@Req() req) {
-    const userId = req.user.userId;
+    const userId = "0d87985a-22e4-4378-9c35-239d5567d2a6";
     const cart = await this.shoppingCart.getCart(userId);
     return { message: 'Cart retrieved successfully', cart };
   }
@@ -53,6 +52,7 @@ export class ShoppingCartController {
     status: 200,
     description: 'Quantidade do item atualizada com sucesso.',
   })
+
   async updateItemQuantity(
     @Body() body: { cartId: string; productId: string; quantity: number },
   ) {

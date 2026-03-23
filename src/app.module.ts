@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ProductsModule } from './products/product.module';
@@ -12,7 +11,8 @@ import { ShoppingCartModule } from './shopping-cart/shopping-cart.module';
 import { DistanceMatrixService } from './services/distance-matrix.service';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
-
+import { OrdersModule } from './orders/order.module';
+import { PaymentModule } from './payment/payment.module';
 @Module({
   imports: [
     AuthModule,
@@ -20,7 +20,9 @@ import { ConfigModule } from '@nestjs/config';
     ProductsModule,
     CategoryModule,
     ShoppingCartModule,
+    OrdersModule,
     HttpModule,
+    PaymentModule,
     ConfigModule.forRoot({
       isGlobal: true,
     }),

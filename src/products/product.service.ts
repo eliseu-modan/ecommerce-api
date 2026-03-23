@@ -6,49 +6,65 @@ import { PrismaService } from '../prisma.service';
 export class ProductsService {
   constructor(private readonly prisma: PrismaService) {}
 
- async createProductService(productDto: CreateProductDto) {
-  const { id, name, description, price, stock, categoryId, attributes, images } = productDto;
-
-  const existingProduct = await this.prisma.product.findUnique({
-    where: { id },
-  });
-
-  if (existingProduct) {
-    throw new ConflictException('Product with this ID already exists');
-  }
-
-  const product = await this.prisma.product.create({
-    data: {
+  async createProductService(productDto: CreateProductDto) {
+    const {
       id,
       name,
       description,
       price,
       stock,
       categoryId,
-      attributes: {
-        create: attributes?.map(attr => ({
-          name: attr.name,
-          value: attr.value,
-        })) || [],
-      },
-      images: {
-        create: images?.map(img => ({
-          url: img.url,
-          altText: img.altText,
-        })) || [],
-      },
-    },
-  });
+      attributes,
+      images,
+    } = productDto;
 
-  return { message: 'Product created successfully', product };
-}
+    const existingProduct = await this.prisma.product.findUnique({
+      where: { id },
+    });
+
+    if (existingProduct) {
+      throw new ConflictException('Product with this ID already exists');
+    }
+
+    const product = await this.prisma.product.create({
+      data: {
+        id,
+        name,
+        description,
+        price,
+        stock,
+        categoryId,
+        attributes: {
+          create:
+            attributes?.map((attr) => ({
+              name: attr.name,
+              value: attr.value,
+            })) || [],
+        },
+        images: {
+          create:
+            images?.map((img) => ({
+              url: img.url,
+              altText: img.altText,
+            })) || [],
+        },
+      },
+    });
+
+    return { message: 'Product created successfully', product };
+  }
 
   async getAllProductsService() {
     const products = await this.prisma.product.findMany({
       include: {
-        category: true,
+        images: {
+          select: {
+            url: true,
+          },
+        },
       },
     });
+
     return products;
   }
 

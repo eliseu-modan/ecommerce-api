@@ -9,7 +9,7 @@ import {
   Patch,
   Delete,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateCategoryDto } from './dto/CreateCategoryDto';
 import { CategoryService } from './category.service';
 
@@ -25,40 +25,38 @@ export class CategoryController {
     return { message: 'Category created', category: categoryDto };
   }
 
-    @Get('getAll')
-    @ApiOperation({ summary: 'Trazer todas as categorias' })
-    @UseGuards()
-    @ApiResponse({
-      status: 200,
-      description: 'Lista de categorias retornada com sucesso.',
-    })
-    async getAllCategories(@Req() req, @Res() res) {
-      const categories = await this.categoryService.getAllCategoriesService();
-      return res.status(200).json(categories);
-    }
+  @Get()
+  @ApiOperation({ summary: 'Trazer todas as categorias' })
+  @ApiResponse({
+    status: 200,
+    description: 'Lista de categorias retornada com sucesso.',
+  })
+  getAllCategories() {
+    return this.categoryService.getAllCategoriesService();
+  }
 
-    @Patch('update/:id')
-    @ApiOperation({ summary: 'Atualizar uma categoria' })
-    @ApiResponse({
-      status: 200,
-      description: 'Categoria atualizada com sucesso.',
-    })
-    async updateCategory(
-      @Req() req,
-      @Res() res,
-      @Body() categoryDto: CreateCategoryDto,
-    ) {
-      const { id } = req.params;
-      await this.categoryService.updateCategoryService(id, categoryDto);
-      return res.status(200).json({ message: 'Category updated successfully' });
-    }
+  @Patch('update/:id')
+  @ApiOperation({ summary: 'Atualizar uma categoria' })
+  @ApiResponse({
+    status: 200,
+    description: 'Categoria atualizada com sucesso.',
+  })
+  async updateCategory(
+    @Req() req,
+    @Res() res,
+    @Body() categoryDto: CreateCategoryDto,
+  ) {
+    const { id } = req.params;
+    await this.categoryService.updateCategoryService(id, categoryDto);
+    return res.status(200).json({ message: 'Category updated successfully' });
+  }
 
-    @Delete('delete/:id')
-    @ApiOperation({ summary: 'Deletar uma categoria' })
-    @ApiResponse({ status: 200, description: 'Categoria deletada com sucesso.' })
-    async deleteCategory(@Req() req, @Res() res) {
-      const { id } = req.params;
-      await this.categoryService.deleteCategoryService(id);
-      return res.status(200).json({ message: 'Category deleted successfully' });
-    }
+  @Delete('delete/:id')
+  @ApiOperation({ summary: 'Deletar uma categoria' })
+  @ApiResponse({ status: 200, description: 'Categoria deletada com sucesso.' })
+  async deleteCategory(@Req() req, @Res() res) {
+    const { id } = req.params;
+    await this.categoryService.deleteCategoryService(id);
+    return res.status(200).json({ message: 'Category deleted successfully' });
+  }
 }

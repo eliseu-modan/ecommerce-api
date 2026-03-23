@@ -37,7 +37,7 @@ export class ShoppingCartService {
         data: {
           cartId: cart.id,
           productId,
-          quantity: 0,
+          quantity: 1,
         },
       });
     }
@@ -106,9 +106,18 @@ export class ShoppingCartService {
       originsArray,
       destinationsArray,
     );
-    console.log(JSON.stringify(distanceResponse, null, 2));
+
+    if (
+      !distanceResponse.rows?.length ||
+      !distanceResponse.rows[0]?.elements?.length
+    ) {
+      throw new Error(
+        distanceResponse.error_message || 'Erro ao calcular a distância.',
+      );
+    }
 
     const element = distanceResponse.rows[0].elements[0];
+
     if (element.status !== 'OK') {
       throw new Error(
         'Não foi possível calcular o frete para os endereços informados.',
