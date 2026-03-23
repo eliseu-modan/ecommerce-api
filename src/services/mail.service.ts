@@ -12,6 +12,9 @@ export class MailService {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
+      tls: {
+        rejectUnauthorized: false,
+      },
     });
   }
 
@@ -28,7 +31,7 @@ export class MailService {
   async sendPasswordReset(to: string, resetLink: string) {
     const mailOptions = {
       from: process.env.EMAIL_USER,
-      to,
+      to: to,
       subject: 'Redefinição de Senha',
       text: `Clique no link para redefinir sua senha: ${resetLink}`,
     };

@@ -17,10 +17,6 @@ import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
-
-
-
-
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
@@ -42,7 +38,6 @@ export class UsersController {
       ...updateUserDto,
       id: req.user.userId,
     };
-    console.log(updateUserData);
     return this.usersService.updateUser(updateUserData);
   }
 
@@ -65,7 +60,10 @@ export class UsersController {
   @UseGuards(JwtAuthGuard)
   @Get('user-profile')
   @ApiOperation({ summary: 'Obter Perfil do Usuário' })
-  @ApiResponse({ status: 200, description: 'Perfil do usuário obtido com sucesso.' })
+  @ApiResponse({
+    status: 200,
+    description: 'Perfil do usuário obtido com sucesso.',
+  })
   async getUserProfile(@Req() req) {
     const userId = req.user.userId;
     return this.usersService.getUserProfile(userId);
@@ -73,7 +71,10 @@ export class UsersController {
 
   @Post('add-address')
   @ApiOperation({ summary: 'Adicionar Endereço' })
-  @ApiResponse({ status: 200, description: 'Endereço adicionado com sucesso .' })
+  @ApiResponse({
+    status: 200,
+    description: 'Endereço adicionado com sucesso .',
+  })
   @UseGuards(JwtAuthGuard)
   async addAddress(@Req() req, @Body() createAddressDto: CreateAddressDto) {
     const dataAddres = { userId: req.user.userId, ...createAddressDto };

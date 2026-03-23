@@ -1,99 +1,242 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# E-commerce API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+![Node](https://img.shields.io/badge/node-20-green)
+![NestJS](https://img.shields.io/badge/nestjs-backend-red)
+![PostgreSQL](https://img.shields.io/badge/postgres-db-blue)
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+API REST de e-commerce completa, desenvolvida com NestJS, Prisma e PostgreSQL, seguindo arquitetura modular e boas práticas de desenvolvimento backend.
 
-## Description
+A aplicação implementa autenticação JWT, login social com Google, recuperação de senha, gestão de produtos, carrinho, pedidos, pagamentos e cálculo de frete.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+---
 
-## Project setup
+## 🧠 Boas práticas aplicadas
+
+Este projeto foi desenvolvido seguindo princípios de arquitetura e boas práticas de engenharia de software:
+
+- Aplicação de princípios SOLID
+- Separação de responsabilidades (Controllers, Services, Modules)
+- Uso de injeção de dependência (NestJS)
+- Organização modular e escalável
+- Validação e estruturação de dados com DTOs
+- Testes automatizados com Jest (unitários e E2E)
+
+## 🚀 Visão geral
+
+Esta API fornece endpoints para:
+
+- Autenticação de usuários com JWT
+- Login social com Google OAuth
+- Recuperação de senha via e-mail
+- Gerenciamento de usuários e endereços
+- Cadastro e listagem de categorias e produtos
+- Operações de carrinho de compras
+- Criação e gerenciamento de pedidos
+- Registro e consulta de pagamentos
+- Cálculo de frete via Google Distance Matrix
+
+---
+
+## 🧱 Arquitetura
+
+O projeto segue uma arquitetura modular baseada no NestJS, separando responsabilidades por domínio:
+
+- **Controllers** → gerenciamento das rotas HTTP  
+- **Services** → regras de negócio  
+- **Modules** → organização por contexto (auth, users, orders, etc.)  
+- **Prisma ORM** → acesso ao banco de dados  
+
+A aplicação foi estruturada com foco em escalabilidade, organização e manutenção, aplicando princípios de Clean Code.
+
+---
+
+## 🔐 Segurança
+
+- Autenticação via JWT  
+- Hash de senhas com bcrypt  
+- Login social com Google OAuth  
+- Recuperação de senha com envio de e-mail  
+- Proteção de rotas com `JwtAuthGuard`  
+
+---
+
+## 🛠️ Stack
+
+- NestJS  
+- TypeScript  
+- Prisma ORM  
+- PostgreSQL  
+- Passport + JWT  
+- Nodemailer  
+- Swagger  
+- Jest  
+
+---
+
+## 📁 Estrutura do projeto
+
+src/
+├── auth/
+├── users/
+├── products/
+├── category/
+├── shopping-cart/
+├── orders/
+├── payment/
+└── services/
+
+
+---
+
+## 🧩 Modelos principais
+
+O schema Prisma inclui os seguintes domínios:
+
+- `User`
+- `Address`
+- `PasswordReset`
+- `Category`
+- `Product`
+- `ProductAttribute`
+- `ProductImage`
+- `Cart`
+- `CartItem`
+- `Order`
+- `OrderItem`
+- `Payment`
+- `Shipment`
+- `Notification`
+
+---
+
+## ⚙️ Pré-requisitos
+
+- Node.js 20+
+- npm
+- PostgreSQL
+
+Opcionalmente, você pode subir o banco com Docker:
 
 ```bash
-$ npm install
-```
+docker compose up -d
 
-## Compile and run the project
+📦 Instalação
+git clone https://github.com/eliseu-modan/ecommerce
+cd ecommerce
+npm install
+🔑 Variáveis de ambiente
 
-```bash
-# development
-$ npm run start
+Crie um arquivo .env na raiz do projeto:
 
-# watch mode
-$ npm run start:dev
+DATABASE_URL="postgresql://admin:admin@localhost:5432/nestdb?schema=public"
+JWT_SECRET="sua_chave_jwt"
+GOOGLE_CLIENT_ID="seu_google_client_id"
+GOOGLE_CLIENT_SECRET="seu_google_client_secret"
+API_GOOGLE_KEY="sua_chave_google_distance_matrix"
+EMAIL_USER="seu_email@gmail.com"
+EMAIL_PASS="sua_senha_ou_app_password"
+PORT=3000
+⚠️ Observações de ambiente
+API_GOOGLE_KEY é obrigatória para a aplicação iniciar
+Callback Google OAuth: 
+http://localhost:3000/auth/google/callback
+Redirect após login Google:
+http://localhost:9000/auth/googleAuth
+Envio de e-mail via Gmail (Nodemailer)
 
-# production mode
-$ npm run start:prod
-```
+🗄️ Banco de dados
 
-## Run tests
+Execute as migrations:
 
-```bash
-# unit tests
-$ npm run test
+npx prisma generate
+npx prisma migrate deploy
 
-# e2e tests
-$ npm run test:e2e
+Para desenvolvimento:
 
-# test coverage
-$ npm run test:cov
-```
+npx prisma migrate dev
+▶️ Executando o projeto
+npm run start:dev
 
-## Deployment
+A aplicação estará disponível em:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+API: http://localhost:3000
+Swagger: http://localhost:3000/api-docs
+📡 Como consumir a API
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+Após iniciar o servidor, utilize o Swagger para testar os endpoints:
 
-```bash
-$ npm install -g mau
-$ mau deploy
-```
+http://localhost:3000/api-docs
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+🔐 Autenticação
+Faça login em /auth/login
+Copie o token JWT retornado
+Utilize no header das requisições:
+Authorization: Bearer <token>
 
-## Resources
 
-Check out a few resources that may come in handy when working with NestJS:
+🔗 Endpoints principais
+Auth
+POST /auth/login
+GET /auth/google
+GET /auth/google/callback
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+Users
+POST /users
+PATCH /users/update-user
+POST /users/forgot-password
+POST /users/reset-password
+GET /users/user-profile
+POST /users/add-address
+PATCH /users/update-address/:id
+GET /users/addresses
 
-## Support
+Category
+POST /category/create
+GET /category
+PATCH /category/update/:id
+DELETE /category/delete/:id
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+Product
+POST /product/create
+GET /product/getAll
+PATCH /product/update/:id
+DELETE /product/delete/:id
 
-## Stay in touch
+Shopping Cart
+POST /shopping-cart/add-item-to-cart
+GET /shopping-cart/get-cart
+PATCH /shopping-cart/update-item-quantity
+DELETE /shopping-cart/remove-item/:cartId/:productId
+POST /shopping-cart/calculate-shipping
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Orders
+POST /order/create
+GET /order/all
 
-## License
+Payment
+POST /payment/make-payment
+GET /payment/get-payment/:id
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+
+📜 Scripts úteis
+npm run start
+npm run start:dev
+npm run build
+npm run start:prod
+npm run lint
+npm run test
+npm run test:e2e
+🧪 Testes
+
+O projeto possui testes unitários e E2E utilizando Jest:
+npm run test
+npm run test:e2e
+
+🚧 Melhorias futuras
+Integração com gateway de pagamento (Stripe, Mercado Pago, etc.)
+Configuração dinâmica de URLs de OAuth
+Cache para cálculo de frete
+Deploy em ambiente cloud (AWS, Docker, etc.)
+
+👨‍💻 Autor
+Eliseu Modanesi

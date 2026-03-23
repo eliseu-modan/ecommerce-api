@@ -22,8 +22,7 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUserDto) {
-    const { name, email, password, profilePic, role, googleId, facebookId } =
-      createUserDto;
+    const { name, email, password, profilePic, role, googleId } = createUserDto;
 
     let existingUser = await this.prisma.user.findUnique({ where: { email } });
 
@@ -89,6 +88,8 @@ export class UsersService {
         used: false,
       },
     });
+    console.log(email, token);
+    
     const resetLink = `https://seusite.com/reset-password?token=${token}`;
     await this.mailService.sendPasswordReset(user.email, resetLink);
 

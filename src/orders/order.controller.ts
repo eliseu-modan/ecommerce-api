@@ -4,10 +4,7 @@ import {
   Post,
   Body,
   UseGuards,
-  Req,
-  Res,
-  Patch,
-  Delete,
+  Req
 } from '@nestjs/common';
 import { OrdersService } from './order.service';
 import { CreateOrderDto } from '../orders/dto/create-order-dto';
