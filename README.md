@@ -4,91 +4,114 @@
 ![NestJS](https://img.shields.io/badge/nestjs-backend-red)
 ![PostgreSQL](https://img.shields.io/badge/postgres-db-blue)
 
-API REST de e-commerce completa, desenvolvida com NestJS, Prisma e PostgreSQL, seguindo arquitetura modular e boas práticas de desenvolvimento backend.
+API REST de e-commerce desenvolvida com NestJS, Prisma e PostgreSQL, com autenticação JWT, login social com Google, recuperação de senha, catálogo de produtos, carrinho, pedidos, pagamentos e cálculo de frete.
 
-A aplicação implementa autenticação JWT, login social com Google, recuperação de senha, gestão de produtos, carrinho, pedidos, pagamentos e cálculo de frete.
-
----
-
-## 🧠 Boas práticas aplicadas
-
-Este projeto foi desenvolvido seguindo princípios de arquitetura e boas práticas de engenharia de software:
-
-- Aplicação de princípios SOLID
-- Separação de responsabilidades (Controllers, Services, Modules)
-- Uso de injeção de dependência (NestJS)
-- Organização modular e escalável
-- Validação e estruturação de dados com DTOs
-- Testes automatizados com Jest (unitários e E2E)
-
-## 🚀 Visão geral
+## Visão geral
 
 Esta API fornece endpoints para:
 
-- Autenticação de usuários com JWT
+- Autenticação com JWT
 - Login social com Google OAuth
-- Recuperação de senha via e-mail
-- Gerenciamento de usuários e endereços
+- Recuperação de senha por e-mail
+- Gestão de usuários e endereços
 - Cadastro e listagem de categorias e produtos
 - Operações de carrinho de compras
-- Criação e gerenciamento de pedidos
+- Criação e consulta de pedidos
 - Registro e consulta de pagamentos
 - Cálculo de frete via Google Distance Matrix
 
----
+## Arquitetura
 
-## 🧱 Arquitetura
+O projeto está organizado como um monólito modular em NestJS, com separação por domínio e responsabilidades bem definidas:
 
-O projeto segue uma arquitetura modular baseada no NestJS, separando responsabilidades por domínio:
+- `controller`: recebe a requisição HTTP e delega o fluxo
+- `use-case`: concentra a regra de negócio de cada ação
+- `repository`: centraliza o acesso a dados do domínio
+- `database`: expõe o `PrismaService` compartilhado
+- `lib` e `services`: concentram infraestrutura compartilhada, como JWT, mail e integrações externas
 
-- **Controllers** → gerenciamento das rotas HTTP  
-- **Services** → regras de negócio  
-- **Modules** → organização por contexto (auth, users, orders, etc.)  
-- **Prisma ORM** → acesso ao banco de dados  
+Fluxo principal:
 
-A aplicação foi estruturada com foco em escalabilidade, organização e manutenção, aplicando princípios de Clean Code.
+```text
+Controller -> Use Case -> Repository -> PrismaService -> PostgreSQL
+```
 
----
+### Camadas atuais
 
-## 🔐 Segurança
+- `auth`, `users`, `orders`, `payment`, `products`, `shopping-cart` e `category` seguem o padrão `controller -> use-case -> repository`
+- `src/database/database.module.ts` centraliza o acesso ao Prisma
+- `src/lib/jwt` centraliza a configuração e assinatura de tokens JWT
 
-- Autenticação via JWT  
-- Hash de senhas com bcrypt  
-- Login social com Google OAuth  
-- Recuperação de senha com envio de e-mail  
-- Proteção de rotas com `JwtAuthGuard`  
+## Boas práticas aplicadas
 
----
+- Separação de responsabilidades por camada
+- Organização modular por domínio
+- Injeção de dependência com NestJS
+- DTOs para validação de entrada
+- Repositories por módulo para reduzir acoplamento com Prisma
+- Use-cases para isolar regras de negócio
 
-## 🛠️ Stack
+## Segurança
 
-- NestJS  
-- TypeScript  
-- Prisma ORM  
-- PostgreSQL  
-- Passport + JWT  
-- Nodemailer  
-- Swagger  
-- Jest  
+- Autenticação via JWT
+- Hash de senha com bcrypt/bcryptjs
+- Login social com Google OAuth
+- Recuperação de senha com envio de e-mail
+- Proteção de rotas com `JwtAuthGuard`
 
----
+## Stack
 
-## 📁 Estrutura do projeto
+- NestJS
+- TypeScript
+- Prisma ORM
+- PostgreSQL
+- Passport + JWT
+- Nodemailer
+- Swagger
+- Jest
 
+## Estrutura do projeto
+
+```text
 src/
+├── app.module.ts
+├── database/
+│   └── database.module.ts
+├── lib/
+│   └── jwt/
 ├── auth/
+│   ├── dto/
+│   ├── guards/
+│   ├── strategies/
+│   └── use-cases/
 ├── users/
+│   ├── dto/
+│   ├── repositories/
+│   └── use-cases/
 ├── products/
+│   ├── dto/
+│   ├── repositories/
+│   └── use-cases/
 ├── category/
+│   ├── dto/
+│   ├── repositories/
+│   └── use-cases/
 ├── shopping-cart/
+│   ├── dto/
+│   ├── repositories/
+│   └── use-cases/
 ├── orders/
+│   ├── dto/
+│   ├── repositories/
+│   └── use-cases/
 ├── payment/
+│   ├── dto/
+│   ├── repositories/
+│   └── use-cases/
 └── services/
+```
 
-
----
-
-## 🧩 Modelos principais
+## Modelos principais
 
 O schema Prisma inclui os seguintes domínios:
 
@@ -107,9 +130,7 @@ O schema Prisma inclui os seguintes domínios:
 - `Shipment`
 - `Notification`
 
----
-
-## ⚙️ Pré-requisitos
+## Pré-requisitos
 
 - Node.js 20+
 - npm
@@ -119,15 +140,21 @@ Opcionalmente, você pode subir o banco com Docker:
 
 ```bash
 docker compose up -d
+```
 
-📦 Instalação
+## Instalação
+
+```bash
 git clone https://github.com/eliseu-modan/ecommerce
 cd ecommerce
 npm install
-🔑 Variáveis de ambiente
+```
 
-Crie um arquivo .env na raiz do projeto:
+## Variáveis de ambiente
 
+Crie um arquivo `.env` na raiz do projeto:
+
+```env
 DATABASE_URL="postgresql://admin:admin@localhost:5432/nestdb?schema=public"
 JWT_SECRET="sua_chave_jwt"
 GOOGLE_CLIENT_ID="seu_google_client_id"
@@ -136,89 +163,111 @@ API_GOOGLE_KEY="sua_chave_google_distance_matrix"
 EMAIL_USER="seu_email@gmail.com"
 EMAIL_PASS="sua_senha_ou_app_password"
 PORT=3000
-⚠️ Observações de ambiente
-API_GOOGLE_KEY é obrigatória para a aplicação iniciar
-Callback Google OAuth: 
-http://localhost:3000/auth/google/callback
-Redirect após login Google:
-http://localhost:9000/auth/googleAuth
-Envio de e-mail via Gmail (Nodemailer)
+```
 
-🗄️ Banco de dados
+## Observações de ambiente
+
+- `API_GOOGLE_KEY` é obrigatória para a aplicação iniciar
+- Callback Google OAuth: `http://localhost:3000/auth/google/callback`
+- Redirect após login Google: `http://localhost:9000/auth/googleAuth`
+- O envio de e-mail utiliza Gmail via Nodemailer
+
+## Banco de dados
 
 Execute as migrations:
 
+```bash
 npx prisma generate
 npx prisma migrate deploy
+```
 
 Para desenvolvimento:
 
+```bash
 npx prisma migrate dev
-▶️ Executando o projeto
+```
+
+## Executando o projeto
+
+```bash
 npm run start:dev
+```
 
 A aplicação estará disponível em:
 
-API: http://localhost:3000
-Swagger: http://localhost:3000/api-docs
-📡 Como consumir a API
+- API: `http://localhost:3000`
+- Swagger: `http://localhost:3000/api-docs`
+
+## Como consumir a API
 
 Após iniciar o servidor, utilize o Swagger para testar os endpoints:
 
-http://localhost:3000/api-docs
+`http://localhost:3000/api-docs`
 
-🔐 Autenticação
-Faça login em /auth/login
-Copie o token JWT retornado
-Utilize no header das requisições:
+### Autenticação
+
+1. Faça login em `POST /auth/login`
+2. Copie o token JWT retornado
+3. Envie no header:
+
+```http
 Authorization: Bearer <token>
+```
 
+## Endpoints principais
 
-🔗 Endpoints principais
-Auth
-POST /auth/login
-GET /auth/google
-GET /auth/google/callback
+### Auth
 
-Users
-POST /users
-PATCH /users/update-user
-POST /users/forgot-password
-POST /users/reset-password
-GET /users/user-profile
-POST /users/add-address
-PATCH /users/update-address/:id
-GET /users/addresses
+- `POST /auth/login`
+- `GET /auth/google`
+- `GET /auth/google/callback`
 
-Category
-POST /category/create
-GET /category
-PATCH /category/update/:id
-DELETE /category/delete/:id
+### Users
 
-Product
-POST /product/create
-GET /product/getAll
-PATCH /product/update/:id
-DELETE /product/delete/:id
+- `POST /users`
+- `PATCH /users/update-user`
+- `POST /users/forgot-password`
+- `POST /users/reset-password`
+- `GET /users/user-profile`
+- `POST /users/add-address`
+- `PATCH /users/update-address/:id`
+- `GET /users/addresses`
 
-Shopping Cart
-POST /shopping-cart/add-item-to-cart
-GET /shopping-cart/get-cart
-PATCH /shopping-cart/update-item-quantity
-DELETE /shopping-cart/remove-item/:cartId/:productId
-POST /shopping-cart/calculate-shipping
+### Category
 
-Orders
-POST /order/create
-GET /order/all
+- `POST /category/create`
+- `GET /category`
+- `PATCH /category/update/:id`
+- `DELETE /category/delete/:id`
 
-Payment
-POST /payment/make-payment
-GET /payment/get-payment/:id
+### Product
 
+- `POST /product/create`
+- `GET /product/getAll`
+- `PATCH /product/update/:id`
+- `DELETE /product/delete/:id`
 
-📜 Scripts úteis
+### Shopping Cart
+
+- `POST /shopping-cart/add-item-to-cart`
+- `GET /shopping-cart/get-cart`
+- `PATCH /shopping-cart/update-item-quantity`
+- `DELETE /shopping-cart/remove-item/:cartId/:productId`
+- `POST /shopping-cart/calculate-shipping`
+
+### Orders
+
+- `POST /order/create`
+- `GET /order/all`
+
+### Payment
+
+- `POST /payment/make-payment`
+- `GET /payment/get-payment/:id`
+
+## Scripts úteis
+
+```bash
 npm run start
 npm run start:dev
 npm run build
@@ -226,17 +275,25 @@ npm run start:prod
 npm run lint
 npm run test
 npm run test:e2e
-🧪 Testes
+```
+
+## Testes
 
 O projeto possui testes unitários e E2E utilizando Jest:
+
+```bash
 npm run test
 npm run test:e2e
+```
 
-🚧 Melhorias futuras
-Integração com gateway de pagamento (Stripe, Mercado Pago, etc.)
-Configuração dinâmica de URLs de OAuth
-Cache para cálculo de frete
-Deploy em ambiente cloud (AWS, Docker, etc.)
+## Melhorias futuras
 
-👨‍💻 Autor
+- Integração com gateway de pagamento real
+- Configuração dinâmica das URLs de OAuth
+- Cache para cálculo de frete
+- Testes por `use-case`
+- Tipagem mais forte para payloads, autenticação e fluxos de domínio
+
+## Autor
+
 Eliseu Modanesi
