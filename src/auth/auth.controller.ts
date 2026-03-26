@@ -1,22 +1,24 @@
 import {
+  Body,
   Controller,
   Get,
   Post,
-  Body,
-  UseGuards,
   Req,
   Res,
+  UseGuards,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthDto } from './dto/auth.dto';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { GoogleAuthGuard } from './guards/auth-google.guard';
+import { HandleGoogleLoginUseCase } from './use-cases/handle-google-login.use-case';
+import { LoginUseCase } from './use-cases/login.use-case';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(
-    private readonly authService: AuthService,
+    private readonly handleGoogleLoginUseCase: HandleGoogleLoginUseCase,
+    private readonly loginUseCase: LoginUseCase,
   ) {}
 
   @Get('google')
@@ -28,7 +30,9 @@ export class AuthController {
   @Get('google/callback')
   @UseGuards(GoogleAuthGuard)
   async googleAuthRedirect(@Req() req, @Res() res) {
-    const { token, user } = await this.authService.handleGoogleLogin(req.user);
+    const { token, user } = await this.handleGoogleLoginUseCase.execute(
+      req.user,
+    );
 
     const userParam = encodeURIComponent(JSON.stringify(user));
     return res.redirect(
@@ -43,6 +47,6 @@ export class AuthController {
     description: 'Usuário autenticado com sucesso.',
   })
   async login(@Body() authDto: AuthDto) {
-    return this.authService.login(authDto);
+    return this.loginUseCase.execute(authDto);
   }
 }

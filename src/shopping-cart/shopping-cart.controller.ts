@@ -1,23 +1,32 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  UseGuards,
-  Req,
-  Res,
-  Patch,
+  Controller,
   Delete,
+  Get,
   Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { AddItemCartDto } from './dto/add-item-cart';
-import { ShoppingCartService } from './shopping-cart.service';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { AddItemCartDto } from './dto/add-item-cart';
+import { AddItemToCartUseCase } from './use-cases/add-item-to-cart.use-case';
+import { CalculateShippingUseCase } from './use-cases/calculate-shipping.use-case';
+import { GetCartUseCase } from './use-cases/get-cart.use-case';
+import { RemoveItemFromCartUseCase } from './use-cases/remove-item-from-cart.use-case';
+import { UpdateItemQuantityUseCase } from './use-cases/update-item-quantity.use-case';
 
 @Controller('shopping-cart')
 export class ShoppingCartController {
-  constructor(private readonly shoppingCart: ShoppingCartService) {}
+  constructor(
+    private readonly addItemToCartUseCase: AddItemToCartUseCase,
+    private readonly getCartUseCase: GetCartUseCase,
+    private readonly updateItemQuantityUseCase: UpdateItemQuantityUseCase,
+    private readonly removeItemFromCartUseCase: RemoveItemFromCartUseCase,
+    private readonly calculateShippingUseCase: CalculateShippingUseCase,
+  ) {}
 
   @Post('add-item-to-cart')
   @UseGuards(JwtAuthGuard)
@@ -27,8 +36,10 @@ export class ShoppingCartController {
     description: 'Item adicionado ao carrinho com sucesso.',
   })
   async addItemToCart(@Req() req, @Body() itemDto: AddItemCartDto) {
-    const userId = req.user.userId;
-    const cartItem = await this.shoppingCart.addItemToCart(itemDto, userId);
+    const cartItem = await this.addItemToCartUseCase.execute(
+      itemDto,
+      req.user.userId,
+    );
     return { message: 'Item added to cart', item: itemDto, cartItem };
   }
 
@@ -39,11 +50,11 @@ export class ShoppingCartController {
     description: 'Item adicionado ao carrinho com sucesso.',
   })
   async getCart(@Req() req) {
-    const userId = "0d87985a-22e4-4378-9c35-239d5567d2a6";
-    const cart = await this.shoppingCart.getCart(userId);
+    const cart = await this.getCartUseCase.execute(
+      '0d87985a-22e4-4378-9c35-239d5567d2a6',
+    );
     return { message: 'Cart retrieved successfully', cart };
   }
-
 
   @Patch('update-item-quantity')
   @UseGuards(JwtAuthGuard)
@@ -52,11 +63,10 @@ export class ShoppingCartController {
     status: 200,
     description: 'Quantidade do item atualizada com sucesso.',
   })
-
   async updateItemQuantity(
     @Body() body: { cartId: string; productId: string; quantity: number },
   ) {
-    const cart = await this.shoppingCart.updateItemQuantity(
+    const cart = await this.updateItemQuantityUseCase.execute(
       body.cartId,
       body.productId,
       body.quantity,
@@ -75,7 +85,7 @@ export class ShoppingCartController {
     @Param('cartId') cartId: string,
     @Param('productId') productId: string,
   ) {
-    await this.shoppingCart.removeItemFromCart(cartId, productId);
+    await this.removeItemFromCartUseCase.execute(cartId, productId);
     return { message: 'Item removed from cart successfully' };
   }
 
@@ -86,12 +96,16 @@ export class ShoppingCartController {
     status: 200,
     description: 'Frete calculado com sucesso.',
   })
-  async calculateShipping(@Req() req, @Body() body: { origins: string[], destinations: string[] }) {
-    const userId = req.user.userId;
-    const distanceData = await this.shoppingCart.calculateShipping(body.origins, body.destinations, userId);
+  async calculateShipping(
+    @Req() req,
+    @Body() body: { origins: string[]; destinations: string[] },
+  ) {
+    const distanceData = await this.calculateShippingUseCase.execute(
+      body.origins,
+      body.destinations,
+      req.user.userId,
+    );
+
     return { message: 'Shipping calculated successfully', distanceData };
   }
-}
-
-{
 }

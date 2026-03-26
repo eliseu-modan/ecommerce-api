@@ -1,32 +1,48 @@
 import {
-  Controller,
-  Post,
   Body,
-  UseGuards,
+  Controller,
   Get,
-  Req,
-  Patch,
   Param,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
 } from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { CreateAddressDto } from './dto/create-address';
+import { CreateUserDto } from './dto/create-user.dto';
+import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { UpdateAddressDto } from './dto/update-addres';
-import { RequestPasswordResetDto } from './dto/request-password-reset.dto';
-import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { CreateAddressUseCase } from './use-cases/create-address.use-case';
+import { CreateUserUseCase } from './use-cases/create-user.use-case';
+import { GetAddressesUseCase } from './use-cases/get-addresses.use-case';
+import { GetUserProfileUseCase } from './use-cases/get-user-profile.use-case';
+import { RequestPasswordResetUseCase } from './use-cases/request-password-reset.use-case';
+import { ResetPasswordUseCase } from './use-cases/reset-password.use-case';
+import { UpdateAddressUseCase } from './use-cases/update-address.use-case';
+import { UpdateUserUseCase } from './use-cases/update-user.use-case';
 
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly createUserUseCase: CreateUserUseCase,
+    private readonly updateUserUseCase: UpdateUserUseCase,
+    private readonly requestPasswordResetUseCase: RequestPasswordResetUseCase,
+    private readonly resetPasswordUseCase: ResetPasswordUseCase,
+    private readonly getUserProfileUseCase: GetUserProfileUseCase,
+    private readonly createAddressUseCase: CreateAddressUseCase,
+    private readonly updateAddressUseCase: UpdateAddressUseCase,
+    private readonly getAddressesUseCase: GetAddressesUseCase,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Criar um usuário' })
   @ApiResponse({ status: 200, description: 'Usuario criado com sucesso.' })
   create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+    return this.createUserUseCase.execute(createUserDto);
   }
 
   @Patch('update-user')
@@ -34,11 +50,10 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Usuario Atualizado com sucesso.' })
   @UseGuards(JwtAuthGuard)
   async updateUser(@Req() req, @Body() updateUserDto: CreateUserDto) {
-    const updateUserData = {
+    return this.updateUserUseCase.execute({
       ...updateUserDto,
       id: req.user.userId,
-    };
-    return this.usersService.updateUser(updateUserData);
+    });
   }
 
   @Post('forgot-password')
@@ -47,14 +62,14 @@ export class UsersController {
   async requestPasswordReset(
     @Body() requestPasswordResetDto: RequestPasswordResetDto,
   ) {
-    return this.usersService.requestPasswordReset(requestPasswordResetDto);
+    return this.requestPasswordResetUseCase.execute(requestPasswordResetDto);
   }
 
   @Post('reset-password')
   @ApiOperation({ summary: 'Redefinir Senha' })
   @ApiResponse({ status: 200, description: 'Senha redefinida com sucesso.' })
   async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
-    return this.usersService.resetPassword(resetPasswordDto);
+    return this.resetPasswordUseCase.execute(resetPasswordDto);
   }
 
   @UseGuards(JwtAuthGuard)
@@ -65,8 +80,7 @@ export class UsersController {
     description: 'Perfil do usuário obtido com sucesso.',
   })
   async getUserProfile(@Req() req) {
-    const userId = req.user.userId;
-    return this.usersService.getUserProfile(userId);
+    return this.getUserProfileUseCase.execute(req.user.userId);
   }
 
   @Post('add-address')
@@ -77,8 +91,10 @@ export class UsersController {
   })
   @UseGuards(JwtAuthGuard)
   async addAddress(@Req() req, @Body() createAddressDto: CreateAddressDto) {
-    const dataAddres = { userId: req.user.userId, ...createAddressDto };
-    return this.usersService.createAddress(dataAddres);
+    return this.createAddressUseCase.execute({
+      userId: req.user.userId,
+      ...createAddressDto,
+    });
   }
 
   @Patch('update-address/:id')
@@ -91,7 +107,7 @@ export class UsersController {
     @Req() req,
     @Body() updateAddressDto: UpdateAddressDto,
   ) {
-    return this.usersService.updateAddress(
+    return this.updateAddressUseCase.execute(
       id,
       req.user.userId,
       updateAddressDto,
@@ -103,6 +119,6 @@ export class UsersController {
   @ApiResponse({ status: 200, description: 'Endereços obtidos com sucesso.' })
   @UseGuards(JwtAuthGuard)
   async getAddresses(@Req() req) {
-    return this.usersService.getAddresses(req.user.userId);
+    return this.getAddressesUseCase.execute(req.user.userId);
   }
 }

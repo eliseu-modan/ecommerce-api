@@ -1,28 +1,35 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  UseGuards,
-  Req,
-  Res,
-  Patch,
+  Controller,
   Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Res,
 } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { CreateCategoryDto } from './dto/CreateCategoryDto';
-import { CategoryService } from './category.service';
+import { CreateCategoryUseCase } from './use-cases/create-category.use-case';
+import { DeleteCategoryUseCase } from './use-cases/delete-category.use-case';
+import { GetAllCategoriesUseCase } from './use-cases/get-all-categories.use-case';
+import { UpdateCategoryUseCase } from './use-cases/update-category.use-case';
 
 @Controller('category')
 export class CategoryController {
-  constructor(private readonly categoryService: CategoryService) {}
+  constructor(
+    private readonly createCategoryUseCase: CreateCategoryUseCase,
+    private readonly getAllCategoriesUseCase: GetAllCategoriesUseCase,
+    private readonly updateCategoryUseCase: UpdateCategoryUseCase,
+    private readonly deleteCategoryUseCase: DeleteCategoryUseCase,
+  ) {}
 
   @Post('create')
   @ApiOperation({ summary: 'Criar uma categoria' })
   @ApiResponse({ status: 201, description: 'Categoria criada com sucesso.' })
   async createCategory(@Body() categoryDto: CreateCategoryDto) {
-    await this.categoryService.createCategoryService(categoryDto);
-    return { message: 'Category created', category: categoryDto };
+    const category = await this.createCategoryUseCase.execute(categoryDto);
+    return { message: 'Category created', category };
   }
 
   @Get()
@@ -32,7 +39,7 @@ export class CategoryController {
     description: 'Lista de categorias retornada com sucesso.',
   })
   getAllCategories() {
-    return this.categoryService.getAllCategoriesService();
+    return this.getAllCategoriesUseCase.execute();
   }
 
   @Patch('update/:id')
@@ -42,21 +49,19 @@ export class CategoryController {
     description: 'Categoria atualizada com sucesso.',
   })
   async updateCategory(
-    @Req() req,
-    @Res() res,
+    @Param('id') id: string,
     @Body() categoryDto: CreateCategoryDto,
+    @Res() res,
   ) {
-    const { id } = req.params;
-    await this.categoryService.updateCategoryService(id, categoryDto);
+    await this.updateCategoryUseCase.execute(id, categoryDto);
     return res.status(200).json({ message: 'Category updated successfully' });
   }
 
   @Delete('delete/:id')
   @ApiOperation({ summary: 'Deletar uma categoria' })
   @ApiResponse({ status: 200, description: 'Categoria deletada com sucesso.' })
-  async deleteCategory(@Req() req, @Res() res) {
-    const { id } = req.params;
-    await this.categoryService.deleteCategoryService(id);
+  async deleteCategory(@Param('id') id: string, @Res() res) {
+    await this.deleteCategoryUseCase.execute(id);
     return res.status(200).json({ message: 'Category deleted successfully' });
   }
 }
