@@ -1,7 +1,7 @@
 // dto/create-address.dto.ts
 
 import { IsString, IsEnum, IsOptional } from 'class-validator';
-import { AddressType } from '@prisma/client'; // Enum criado no Prisma (DELIVERY ou BILLING)
+import { AddressType } from '@prisma/client'; 
 
 export class CreateAddressDto {
   @IsEnum(AddressType)

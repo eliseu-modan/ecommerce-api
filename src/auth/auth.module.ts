@@ -1,22 +1,21 @@
 import { Module } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { ConfigModule } from '@nestjs/config';
+import { AppJwtModule } from 'src/lib/jwt/jwt.module';
+import { UsersModule } from '../users/users.module';
 import { AuthController } from './auth.controller';
 import { GoogleStrategy } from './strategies/google.strategy';
-import { UsersModule } from '../users/users.module';
-import { ConfigModule } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt'
 import { JwtStrategy } from './strategies/jwt.strategy';
+import { HandleGoogleLoginUseCase } from './use-cases/handle-google-login.use-case';
+import { LoginUseCase } from './use-cases/login.use-case';
 
 @Module({
-  imports: [
-    UsersModule,
-    ConfigModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET || 'CHAVE_SECRETA_SUPER_SEGURA',
-      signOptions: { expiresIn: '1h' },
-    }),
+  imports: [UsersModule, ConfigModule, AppJwtModule],
+  providers: [
+    HandleGoogleLoginUseCase,
+    LoginUseCase,
+    GoogleStrategy,
+    JwtStrategy,
   ],
-  providers: [AuthService, GoogleStrategy, JwtStrategy],
   controllers: [AuthController],
 })
 export class AuthModule {}
