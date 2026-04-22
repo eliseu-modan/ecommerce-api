@@ -1,10 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import cors from "cors";
+
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
   
+  app.use(cors({
+  origin: "https://seu-frontend.vercel.app",
+  credentials: true
+}));
 
   const config = new DocumentBuilder()
     .setTitle('My API')
