@@ -11,11 +11,11 @@ model User {
   id          String    @id @default(uuid())
   name        String
   email       String    @unique
-  password    String?   // Can be null for Google/Facebook login
-  profilePic  String?   // Profile picture URL
+  password    String? 
+  profilePic  String?  
   role        String    
-  googleId    String?   @unique // For Google login
-  facebookId  String?   @unique // For Facebook login
+  googleId    String?   @unique 
+  facebookId  String?   @unique 
   orders      Order[]
   addresses    Address[]
   notifications Notification[]
@@ -29,7 +29,7 @@ model Address {
   id          String   @id @default(uuid())
   userId      String
   user        User     @relation(fields: [userId], references: [id])
-  type        AddressType  // ENTREGA ou COBRANCA
+  type        AddressType 
   street      String
   number      String
   complement  String?
@@ -77,16 +77,16 @@ model ProductAttribute {
   id          String   @id @default(uuid())
   product     Product  @relation(fields: [productId], references: [id])
   productId   String
-  name        String   // Nome do atributo: ex. "Cor", "Tamanho"
-  value       String   // Valor do atributo: ex. "Azul", "42"
+  name        String  
+  value       String  
 }
 
 model ProductImage {
   id          String   @id @default(uuid())
   product     Product  @relation(fields: [productId], references: [id])
   productId   String
-  url         String   // URL da imagem no servidor ou S3
-  altText     String?  // Texto alternativo para acessibilidade
+  url         String  
+  altText     String? 
 }
 
 model Category {
@@ -100,7 +100,7 @@ model Order {
   id          String       @id @default(uuid())
   user        User         @relation(fields: [userId], references: [id])
   userId      String
-  status      String       @default("pending") // "pending", "paid", "shipped", "canceled"
+  status      String       @default("pending")
   items       OrderItem[]
   payment     Payment?
   shipment    Shipment?
@@ -123,8 +123,8 @@ model Payment {
   id          String  @id @default(uuid())
   order       Order?   @relation(fields: [orderId], references: [id])
   orderId     String  @unique
-  method      String  // "PayPal", "Stripe", "Credit Card", etc.
-  status      String  // "approved", "rejected", "pending"
+  method      String 
+  status      String 
   amountPaid Decimal  @db.Decimal(10,2)
   paidAt       DateTime?
 }
@@ -134,7 +134,7 @@ model Shipment {
   order         Order   @relation(fields: [orderId], references: [id])
   orderId       String  @unique
   trackingCode  String?
-  status        String  // "in transit", "delivered"
+  status        String 
   shippedAt     DateTime @default(now())
 }
 
@@ -143,7 +143,7 @@ model Notification {
   user        User    @relation(fields: [userId], references: [id])
   userId      String
   message     String
-  type        String  // "order updated", "payment approved", etc.
+  type        String 
   read        Boolean @default(false)
   sentAt      DateTime @default(now())
 }
@@ -151,8 +151,8 @@ model Notification {
 model Cart {
   id        String      @id @default(uuid())
   user      User        @relation(fields: [userId], references: [id])
-  userId    String      @unique // 1 carrinho por usuário
-  items     CartItem[]  // Produtos no carrinho
+  userId    String      @unique
+  items     CartItem[] 
   createdAt DateTime    @default(now())
   updatedAt DateTime    @updatedAt
 }
