@@ -8,10 +8,11 @@ export class GetCartUseCase {
   ) {}
 
   async execute(userId: string) {
-    const cart = await this.shoppingCartRepository.findCartWithItems(userId);
+    let cart = await this.shoppingCartRepository.findCartWithItems(userId);
 
     if (!cart) {
-      throw new Error('Cart not found');
+      await this.shoppingCartRepository.createCart(userId);
+      cart = await this.shoppingCartRepository.findCartWithItems(userId);
     }
 
     return cart;

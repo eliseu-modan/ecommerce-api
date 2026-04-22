@@ -44,15 +44,14 @@ export class ShoppingCartController {
   }
 
   @Get('get-cart')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Obter carrinho do usuário' })
   @ApiResponse({
     status: 201,
     description: 'Item adicionado ao carrinho com sucesso.',
   })
   async getCart(@Req() req) {
-    const cart = await this.getCartUseCase.execute(
-      '0d87985a-22e4-4378-9c35-239d5567d2a6',
-    );
+    const cart = await this.getCartUseCase.execute(req.user.userId);
     return { message: 'Cart retrieved successfully', cart };
   }
 
