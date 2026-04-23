@@ -36,7 +36,7 @@ export class AuthController {
 
     const userParam = encodeURIComponent(JSON.stringify(user));
     return res.redirect(
-      `http://localhost:9000/auth/googleAuth?token=${token}&user=${userParam}`,
+      `http://project-3h8ra.vercel.app/auth/googleAuth?token=${token}&user=${userParam}`,
     );
   }
 
